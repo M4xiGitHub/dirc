@@ -6,6 +6,14 @@
 - Run `python3 -m dirc check` (or `./bin/dirc check`) locally or in CI
 - Optionally `python3 -m dirc compile > dirc-verify.sh` to get a standalone Bash verifier
 
+## Installation
+You can install `dirc` using `pip` or `pipx`.
+```bash
+pipx install -e .
+# Or with pip:
+python3 -m pip install -e .
+```
+
 ## Spec syntax (DSL)
 
 The spec file is indentation-based (spaces or tabs). Each line is either:
