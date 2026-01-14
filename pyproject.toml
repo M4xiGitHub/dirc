@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dirc-linter"
+version = "0.1.0"
+description = "Directory structure linter (DSL -> verifier)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Maximilian Bleier" }]
+
+[project.scripts]
+dirc = "dirc.cli:main"
+
+[tool.setuptools]
+packages = ["dirc"]
+

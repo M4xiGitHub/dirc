@@ -1,0 +1,13 @@
+folder1
+    pngs
+        .png
+    photos
+        *.{svg, jpg, png}
+folder2
+    folder2-*.*
+folder3
+    f3
+        cmd-*.sh
+    f3-*
+        cmd-*.sh
+

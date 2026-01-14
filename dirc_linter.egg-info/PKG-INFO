@@ -1,0 +1,119 @@
+Metadata-Version: 2.4
+Name: dirc-linter
+Version: 0.1.0
+Summary: Directory structure linter (DSL -> verifier)
+Author: Maximilian Bleier
+License: MIT
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# dirc
+
+`dirc` is a tiny directory-structure linter for macOS/Linux.
+
+- Write a spec file (default: `.dirc`) at your repo root
+- Run `python3 -m dirc check` (or `./bin/dirc check`) locally or in CI
+- Optionally `python3 -m dirc compile > dirc-verify.sh` to get a standalone Bash verifier
+
+## Spec syntax (DSL)
+
+The spec file is indentation-based (spaces or tabs). Each line is either:
+
+- A **directory name** (can include globs), like `pngs`, `f3-*`, or `*`
+- A **file pattern** (glob), like `*.png`, `.png` (same as `*.png`), or `*.{svg,jpg,png}`
+- A **required file** (literal filename), like `cmd-must.sh`
+
+Comments:
+- Full-line comments start with `#`
+- Inline comments are supported when `#` is preceded by whitespace (e.g. `folder3  # ok`)
+
+Rules are **strict** for directories you describe: in a directory, only the listed subdirectories and file patterns are allowed.
+By default, the **project root allows extra entries** (so you can lint a subset of the repo); pass `--strict-root` to make the root strict too.
+The checker always ignores `.git` and the spec file itself.
+
+You can also allow files at the project root by adding file patterns at the top level.
+
+### Example
+
+`.dirc`:
+
+```text
+folder1
+    pngs
+        .png
+    photos
+        *.{svg, jpg, png}
+folder2
+    folder2-*.*
+```
+
+Meaning (with `--strict-root`):
+
+- Only `folder1` and `folder2` are allowed at the project root (plus ignored items like `.git` and `.dirc`)
+- `folder1/pngs` may contain only `*.png` files
+- `folder1/photos` may contain only `*.svg`, `*.jpg`, `*.png` files
+- `folder2` may contain only files starting with `folder2-`
+
+### Wildcard directories + required files
+
+```text
+folder3
+    f3-*
+        cmd-*.sh
+```
+
+Any directory under `folder3` starting with `f3-` is allowed, and inside it only `cmd-*.sh` files are allowed.
+
+```text
+folder3
+    *
+        cmd-*.sh
+        cmd-must.sh
+        resources
+```
+
+Any directory name under `folder3` is allowed, but each such directory must contain `cmd-must.sh` and a `resources/` folder, and may otherwise only contain files matching `cmd-*.sh`.
+
+## Usage
+
+Run a check from the repo root:
+
+```bash
+dirc check
+```
+
+Compile to a standalone verifier script:
+
+```bash
+dirc compile > dirc-verify.sh
+chmod +x dirc-verify.sh
+./dirc-verify.sh .
+```
+
+Make the project root strict:
+
+```bash
+dirc check --strict-root
+```
+
+### GitHub Actions
+
+Use `.github/workflows/dirc.yml` (included) or run:
+
+```bash
+python3 -m dirc check
+```
+
+### Git hooks (local)
+
+Install `pre-commit` + `pre-push` hooks:
+
+```bash
+./scripts/install-githooks.sh
+```
+
+## Install
+
+Global (recommended): `pipx install -e .`
+
+Or with pip: `python3 -m pip install -e .`

@@ -1,0 +1,2 @@
+[console_scripts]
+dirc = dirc.cli:main
